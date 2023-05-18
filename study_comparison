@@ -1,0 +1,185 @@
+echo "# comparação" >> README.md 
+git init 
+git branch -M main 
+git remote add origin https://github.com/stelazo/comparison.git
+ git push - sua origem principal
+git add README.md 
+git commit -m "first commit" 
+
+# created: STEPHANY CAMILA LAZO TEIXEIRA
+
+rm(list=ls())
+
+# Analise de comparação das bases de 2019 e 2020
+
+# Packages 
+
+library(dplyr)
+library(readxl)
+
+# Puxando base, escolhendo aba e admitindo nome aos titulos.
+
+base2019_ativos = read_xlsx("Z:\\GERENCIA\\ESTUDOS\\2021\\VALIDAÇÃO TEMPORAL DAS BASES ATUARIAIS\\BASES\\BD0919estatísticas-v1.xlsx", sheet = 1, col_names = TRUE)
+base2019_inativos = read_xlsx("Z:\\GERENCIA\\ESTUDOS\\2021\\VALIDAÇÃO TEMPORAL DAS BASES ATUARIAIS\\BASES\\BD0919estatísticas-v1.xlsx", sheet = 2, col_names = TRUE)
+base2019_pensionistas = read_xlsx("Z:\\GERENCIA\\ESTUDOS\\2021\\VALIDAÇÃO TEMPORAL DAS BASES ATUARIAIS\\BASES\\BD0919estatísticas-v1.xlsx", sheet = 3, col_names = TRUE)
+
+base2020_ativo = read_xlsx("Z:\\GERENCIA\\ESTUDOS\\2021\\VALIDAÇÃO TEMPORAL DAS BASES ATUARIAIS\\BASES\\2020-12-BD-SPREV.xlsx", sheet = 1, col_names = TRUE)
+base2020_inativo = read_xlsx("Z:\\GERENCIA\\ESTUDOS\\2021\\VALIDAÇÃO TEMPORAL DAS BASES ATUARIAIS\\BASES\\2020-12-BD-SPREV.xlsx", sheet = 2, col_names = TRUE)
+base2020_pensionista = read_xlsx("Z:\\GERENCIA\\ESTUDOS\\2021\\VALIDAÇÃO TEMPORAL DAS BASES ATUARIAIS\\BASES\\2020-12-BD-SPREV.xlsx", sheet = 3, col_names = TRUE)
+base2020_ativos_falecidos_exonerados = read_xlsx("Z:\\GERENCIA\\ESTUDOS\\2021\\VALIDAÇÃO TEMPORAL DAS BASES ATUARIAIS\\BASES\\2020-12-BD-SPREV.xlsx", sheet = 5, col_names = TRUE)
+base2020_inativos_falecidos = read_xlsx("Z:\\GERENCIA\\ESTUDOS\\2021\\VALIDAÇÃO TEMPORAL DAS BASES ATUARIAIS\\BASES\\2020-12-BD-SPREV.xlsx", sheet = 6, col_names = TRUE)
+base2020_pensionista_falecidos = read_xlsx("Z:\\GERENCIA\\ESTUDOS\\2021\\VALIDAÇÃO TEMPORAL DAS BASES ATUARIAIS\\BASES\\2020-12-BD-SPREV.xlsx", sheet = 7, col_names = TRUE)
+
+# Corrigindo o formato da Data de Nascimento
+
+base2019_ativos$data_nascimento = as.character.Date(base2019_ativos$data_nascimento)
+base2019_inativos$data_nascimento = as.character.Date(base2019_inativos$data_nascimento)
+base2019_pensionistas$data_nascimento = as.character.Date(base2019_pensionistas$data_nascimento)
+
+base2020_ativo$DT_NASC_SERVIDOR = as.character.Date(base2020_ativo$DT_NASC_SERVIDOR)
+base2020_inativo$DT_NASC_APOSENTADO = as.character.Date(base2020_inativo$DT_NASC_APOSENTADO)
+base2020_pensionista$DT_NASC_INSTITUIDOR = as.character.Date(base2020_pensionista$DT_NASC_INSTITUIDOR)
+base2020_ativos_falecidos_exonerados$DATA_NASCIMENTO = as.character.Date(base2020_ativos_falecidos_exonerados$DATA_NASCIMENTO)
+base2020_inativos_falecidos$DATA_NASCIMENTO = as.character.Date(base2020_inativos_falecidos$DATA_NASCIMENTO)
+base2020_pensionista_falecidos$DATA_NASCIMENTO_INSTITUIDOR = as.character.Date(base2020_pensionista_falecidos$DATA_NASCIMENTO_INSTITUIDOR)
+
+# Criando novas tabelas com colunas: matricula, cpf, data de nasc, remuneração e situação na base.
+
+tab.ativos2019 = cbind(base2019_ativos$matricula,
+                       base2019_ativos$cpf,
+                       base2019_ativos$data_nascimento,
+                       base2019_ativos$Remuneração,
+                       rep("ATIVOS2019",length(base2019_ativos$Remuneração)))
+
+tab.inativos2019 = cbind(base2019_inativos$matricula,
+                         base2019_inativos$cpf,
+                         base2019_inativos$data_nascimento,
+                         base2019_inativos$valor,
+                         rep("INATIVOS2019",length(base2019_inativos$valor)))
+
+tab.pensionistas2019 = cbind(base2019_pensionistas$matricula,
+                             base2019_pensionistas$cpf_inst,
+                             base2019_pensionistas$data_nascimento,
+                             base2019_pensionistas$valor,
+                             rep("PENSIONISTA2019",length(base2019_pensionistas$data_nascimento)))
+
+tab.ativos2020 = cbind(base2020_ativo$ID_SERVIDOR_MATRICULA,
+                       base2020_ativo$ID_SERVIDOR_CPF,
+                       base2020_ativo$DT_NASC_SERVIDOR,
+                       base2020_ativo$VL_REMUNERACAO,
+                       rep("ATIVOS2020",length(base2020_ativo$VL_REMUNERACAO)))
+
+tab.inativos2020 = cbind(base2020_inativo$ID_APOSENTADO_MATRICULA,
+                         base2020_inativo$ID_APOSENTADO_CPF,
+                         base2020_inativo$DT_NASC_APOSENTADO,
+                         base2020_inativo$VL_APOSENTADORIA,
+                         rep("INATIVO2020",length(base2020_inativo$VL_APOSENTADORIA)))
+
+tab.pensionistas2020 = cbind(base2020_pensionista$ID_INSTITUIDOR_MATRICULA,
+                             base2020_pensionista$ID_INSTITUIDOR_CPF,
+                             base2020_pensionista$DT_NASC_INSTITUIDOR,
+                             base2020_pensionista$VL_BENEF_PENSAO,
+                             rep("PENSIONISTA2020",length(base2020_pensionista$VL_BENEF_PENSAO)))
+
+
+tab.ativos_falecidos_exonerados2020 = cbind(base2020_ativos_falecidos_exonerados$MATRICULA,
+                                            base2020_ativos_falecidos_exonerados$CPF,
+                                            base2020_ativos_falecidos_exonerados$DATA_NASCIMENTO,
+                                            base2020_ativos_falecidos_exonerados$REMUNERACAO_TOTAL,
+                                            rep("ATIVOS_FALECIDOS_EXONERADOS2020",length(base2020_ativos_falecidos_exonerados$REMUNERACAO_TOTAL)))
+
+tab.inativos_falecidos2020 = cbind(base2020_inativos_falecidos$MATRICULA,
+                                   base2020_inativos_falecidos$CPF,
+                                   base2020_inativos_falecidos$DATA_NASCIMENTO,
+                                   rep(NA,length(base2020_inativos_falecidos$DATA_NASCIMENTO)),
+                                   rep("INATIVOS_FALECIDOS2020",length(base2020_inativos_falecidos$DATA_NASCIMENTO)))
+
+tab.pensionistas_falecidos2020 = cbind(base2020_pensionista_falecidos$MATRICULA_INSTITUIDOR,
+                                       base2020_pensionista_falecidos$CPF_INSTITUIDOR,
+                                       base2020_pensionista_falecidos$DATA_NASCIMENTO_INSTITUIDOR,
+                                       base2020_pensionista_falecidos$VALOR_TOTAL_BENEFÍCIO,
+                                       rep("PENSIONISTAS_FALECIDOS2020",length(base2020_pensionista_falecidos$VALOR_TOTAL_BENEFÍCIO)))
+
+# Renomeando o titulo das colunas
+
+colnames(tab.ativos2019) = c("MATRICULA", "CPF", "DATA_NASCIMENTO", "REMUNERACAO2019", "SITUACAO2019")
+colnames(tab.inativos2019) = c("MATRICULA", "CPF", "DATA_NASCIMENTO", "REMUNERACA2019O", "SITUACAO2019")
+colnames(tab.pensionistas2019) = c("MATRICULA", "CPF", "DATA_NASCIMENTO", "REMUNERACAO2019", "SITUACAO2019")
+colnames(tab.ativos2020) = c("MATRICULA", "CPF", "DATA_NASCIMENTO", "REMUNERACAO2020", "SITUACAO2020")
+colnames(tab.inativos2020) = c("MATRICULA", "CPF", "DATA_NASCIMENTO", "REMUNERACAO2020", "SITUACAO2020")
+colnames(tab.pensionistas2020) = c("MATRICULA", "CPF", "DATA_NASCIMENTO", "REMUNERACAO2020", "SITUACAO2020")
+colnames(tab.ativos_falecidos_exonerados2020) = c("MATRICULA", "CPF", "DATA_NASCIMENTO", "REMUNERACAO2020", "SITUACAO2020")
+colnames(tab.inativos_falecidos2020) = c("MATRICULA", "CPF", "DATA_NASCIMENTO", "REMUNERACAO2020", "SITUACAO2020")
+colnames(tab.pensionistas_falecidos2020) = c("MATRICULA", "CPF", "DATA_NASCIMENTO", "REMUNERACAO2020", "SITUACAO2020")
+
+
+# Renomeando as tabelas para facilitar
+
+tab1 = tab.ativos2019
+tab2 = tab.inativos2019
+tab3 = tab.pensionistas2019
+tab4 = tab.ativos2020
+tab5 = tab.inativos2020
+tab6 = tab.pensionistas2020
+tab7 = tab.ativos_falecidos_exonerados2020
+tab8 = tab.inativos_falecidos2020
+tab9 = tab.pensionistas_falecidos2020
+
+
+# Retirando matriculas duplicadas
+
+new = tab1[!duplicated(tab1[c("MATRICULA")])]
+new = tab2[!duplicated(tab2[c("MATRICULA")])]
+new = tab3[!duplicated(tab3[c("MATRICULA")])]
+new = tab4[!duplicated(tab4[c("MATRICULA")])]
+new = tab5[!duplicated(tab5[c("MATRICULA")])]
+new = tab6[!duplicated(tab6[c("MATRICULA")])]
+new = tab7[!duplicated(tab7[c("MATRICULA")])]
+new = tab8[!duplicated(tab8[c("MATRICULA")])]
+new = tab9[!duplicated(tab9[c("MATRICULA")])]
+
+
+# Criando nova tabela com todos os dados.
+
+tab.dados.final.2019 =rbind(tab1, tab2, tab3)
+tab.dados.final.2020 = rbind( tab4, tab5, tab6, tab7, tab8, tab9)
+
+
+# Mudando tabela para formato de excel
+
+df1 = data.frame(tab.dados.final.2019)
+df2 = data.frame(tab.dados.final.2020)
+
+
+# Dividindo a tabela em quem se manteve na base, quem saiu da base em 2020, e quem entrou na base em 2020.
+
+# Quem saiu da base:
+
+saidas = !(df1$MATRICULA %in% df2$MATRICULA)
+
+# Quem entrou na base:
+
+entradas = df2$MATRICULA %in% df1$MATRICULA
+
+# Quem se manteve na base ( com os dados da  tabela de 2019) :
+
+tab.mantidos = df1[!saidas,]
+
+# Associando a tabela das matriculas mantidas junto com os dados complementares da tabela de 2020.
+
+tab.junta = merge (x =tab.mantidos,
+                   y = df2,
+                   by.x = "MATRICULA",
+                   by.y = "MATRICULA")
+
+# Tabela com calculo da diferenças entre a remuneração:
+
+tab.junta$DIFERENCA = as.numeric(tab.junta$REMUNERACAO2020) - as.numeric(tab.junta$REMUNERACAO2019)
+
+# Tabela das matriculas que sumiram da base:
+
+sumiu.da.base = df1[saidas,]
+
+# Tabela das matriculas que sumiram da base:
+
+novos.na.base = df2[entradas,]
