@@ -167,7 +167,7 @@ tab.mantidos = df1[!saidas,]
 
 # Associando a tabela das matriculas mantidas junto com os dados complementares da tabela de 2020.
 
-tab.junta = merge (x =tab.mantidos,
+tab.junta = merge (x = tab.mantidos,
                    y = df2,
                    by.x = "MATRICULA",
                    by.y = "MATRICULA")
